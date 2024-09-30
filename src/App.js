@@ -1,3 +1,4 @@
+/* eslint-disable */ 
 import HomeScreen from './Screens/HomeScreen/HomeScreen';
 import { Provider } from 'react-redux'
 
@@ -28,11 +29,7 @@ function App() {
   return (
       <div style={styles.rootContaner}> 
     <Provider store={store}>
-      <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomeScreen />} />        
-      </Routes>
-      </BrowserRouter>
+    <HomeScreen />     
     </Provider>
       </div>
   );
