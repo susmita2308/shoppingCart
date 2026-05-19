@@ -8,6 +8,7 @@ const HomeScreen = () => {
     const [totalPrice, setTotalPrice] = useState({})
     const basketList = useSelector((state) => state?.cartReducer?.cart)
     const [isLoading, setIsloading] = useState(true)
+    const [isDisable, setButtonDisable] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(()=> {
@@ -17,17 +18,30 @@ const HomeScreen = () => {
     useEffect(()=> {
         let subTotal = 0
         let saving = 0
+        let maxBudget = 20.00
+        let percentage = 90;
+        let totalAmount = 0
         if(basketList?.length > 0) {
             basketList?.forEach((item)=> {
                 subTotal += (item?.price * item?.qty)
                 saving += item?.saving
             })
-            let totalAmount = subTotal - saving
+            totalAmount = subTotal - saving
             setTotalPrice({
                 subTotal,
                 saving,
                 totalAmount
             })
+        }
+        if(totalAmount > maxBudget ){
+            setButtonDisable(true)
+        }
+        else{
+            setButtonDisable(false)
+        }
+        const result = (percentage / 100) * maxBudget;
+        if(result < totalAmount){
+           alert("Your limit has been reached to 90%")
         }
         
     }, [basketList])
@@ -59,7 +73,7 @@ const HomeScreen = () => {
     }
 
     const renderProductItem = (item) => {
-        const isDisabled = basketList?.length > 0 && basketList?.find((val) => val?.id === item?.id)
+        const isDisabled = isDisable || basketList?.length > 0 && basketList?.find((val) => val?.id === item?.id )
         return (
             <div style={styles.productItemContainer}>
                 <p style={styles.productItemName}>{item?.name}</p>
@@ -92,7 +106,7 @@ const HomeScreen = () => {
                     <div style={styles.basketItemBtnContainer}>
                         <button onClick={() => onPressRemove(item)} style={styles.minusBtn}>-</button>
                         <p style={styles.countText}>{item?.qty}</p>
-                        <button onClick={() => onPressAdd(item)} style={styles.plusBtn}>+</button>
+                        <button disabled={isDisable} onClick={() => onPressAdd(item)} style={styles.plusBtn}>+</button>
                     </div>
                 </div>
                 <p style={styles.priceCalText}>Item price £{item?.price} * {item?.qty} = £{(item?.price * item?.qty)?.toFixed(2)}</p>
